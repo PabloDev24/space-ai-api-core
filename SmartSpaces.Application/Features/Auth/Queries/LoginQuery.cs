@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
 using SmartSpaces.Application.Common.Interfaces;
+using SmartSpaces.Domain.Entities;
 
 namespace SmartSpaces.Application.Features.Auth.Queries;
 
@@ -20,10 +21,12 @@ public record UserDto(Guid Id, string Name, string Email, string? Folio, string 
 public class LoginQueryHandler : IRequestHandler<LoginQuery, LoginResponse>
 {
     private readonly IApplicationDbContext _context;
+    private readonly IJwtTokenGenerator _jwtTokenGenerator;
 
-    public LoginQueryHandler(IApplicationDbContext context)
+    public LoginQueryHandler(IApplicationDbContext context, IJwtTokenGenerator jwtTokenGenerator)
     {
         _context = context;
+        _jwtTokenGenerator = jwtTokenGenerator;
     }
 
     public async Task<LoginResponse> Handle(LoginQuery request, CancellationToken cancellationToken)
@@ -39,11 +42,23 @@ public class LoginQueryHandler : IRequestHandler<LoginQuery, LoginResponse>
         }
 
         // 3. Mock temporal de tokens (En la siguiente HU montaremos JWT real)
-        var temporaryAccessToken = "eyJhbGciOiJIUzI1NiIsInR5...";
-        var temporaryRefreshToken = Guid.NewGuid().ToString();
+        var accessToken = _jwtTokenGenerator.GenerateAccessToken(user);
+        var refreshToken = _jwtTokenGenerator.GenerateRefreshToken();
+
+        var session = new Session
+        {
+            Id = Guid.NewGuid(),
+            UserId = user.Id,
+            AccessToken = accessToken,
+            RefreshToken = refreshToken,
+            ExpiresAt = DateTime.UtcNow.AddDays(7)
+        };
+
+        _context.Sessions.Add(session);
+        await _context.SaveChangesAsync(cancellationToken);
 
         var userDto = new UserDto(user.Id, user.Name, user.Email, user.Folio, user.Role);
 
-        return new LoginResponse(temporaryAccessToken, temporaryRefreshToken, 3600, userDto);
+        return new LoginResponse(accessToken, refreshToken, 3600, userDto);
     }
 }
