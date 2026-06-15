@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SmartSpaces.Application.Features.Auth.Commands;
 using Microsoft.AspNetCore.Authorization;
 using SmartSpaces.Application.Features.Auth.Queries;
+using SmartSpaces.Application.Features.Auth.Queries.GetQrToken;
 
 namespace SmartSpaces.API.Controllers;
 
@@ -47,6 +48,25 @@ public class AuthController : ControllerBase
         {
             // Retorna 401 Unauthorized exacto al contrato si la contraseña falla
             return Unauthorized(new { error = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
+    }
+
+    [HttpGet("qr/{userId:guid}")] // GET: /api/auth/qr/{userId}
+    public async Task<IActionResult> GetQrToken([FromRoute] Guid userId)
+    {
+        try
+        {
+            var query = new GetQrTokenQuery(userId);
+            var result = await _mediator.Send(query);
+            return Ok(result);
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new { error = ex.Message });
         }
         catch (Exception ex)
         {
