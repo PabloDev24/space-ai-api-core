@@ -4,6 +4,7 @@ using SmartSpaces.Application.Features.Auth.Commands;
 using Microsoft.AspNetCore.Authorization;
 using SmartSpaces.Application.Features.Auth.Queries;
 using SmartSpaces.Application.Features.Auth.Queries.GetQrToken;
+using SmartSpaces.Application.Features.Auth.Commands.ValidateQr;
 
 namespace SmartSpaces.API.Controllers;
 
@@ -67,6 +68,28 @@ public class AuthController : ControllerBase
         catch (KeyNotFoundException ex)
         {
             return NotFound(new { error = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
+    }
+
+    [HttpPost("qr/validate")] // POST: /api/auth/qr/validate
+    [AllowAnonymous]
+    public async Task<IActionResult> ValidateQr([FromBody] ValidateQrCommand command)
+    {
+        try
+        {
+            var result = await _mediator.Send(command);
+            if (result.IsValid)
+            {
+                return Ok(result);
+            }
+            else
+            {
+                return Unauthorized(new { error = result.Message });
+            }
         }
         catch (Exception ex)
         {
