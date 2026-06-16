@@ -1,12 +1,14 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using SmartSpaces.Application.Features.Auth.Commands;
+using Microsoft.AspNetCore.Authorization;
 using SmartSpaces.Application.Features.Auth.Queries;
 
 namespace SmartSpaces.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")] // Esto mapea a: /api/auth
+[Authorize]
 public class AuthController : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -17,6 +19,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("register")] // POST: /api/auth/register
+    [AllowAnonymous]
     public async Task<IActionResult> Register([FromBody] RegisterUserCommand command)
     {
         try
@@ -32,6 +35,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("login")] // POST: /api/auth/login
+    [AllowAnonymous]
     public async Task<IActionResult> Login([FromBody] LoginQuery query)
     {
         try
