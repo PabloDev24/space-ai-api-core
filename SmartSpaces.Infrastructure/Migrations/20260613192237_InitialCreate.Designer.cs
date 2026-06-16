@@ -12,7 +12,7 @@ using SmartSpaces.Infrastructure.Persistence;
 namespace SmartSpaces.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260611170514_InitialCreate")]
+    [Migration("20260613192237_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />

@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SmartSpaces.Domain.Entities;
-
+using SmartSpaces.Application.Common.Interfaces;
 
 namespace SmartSpaces.Infrastructure.Persistence;
-public class ApplicationDbContext : DbContext
+public class ApplicationDbContext : DbContext, IApplicationDbContext
 {
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 

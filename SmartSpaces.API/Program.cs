@@ -2,6 +2,7 @@ using SmartSpaces.API.Exceptions;
 using SmartSpaces.Application;
 using Microsoft.EntityFrameworkCore;
 using SmartSpaces.Infrastructure.Persistence;
+using SmartSpaces.Application.Common.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +13,9 @@ builder.Services.AddControllers();
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString));
+
+builder.Services.AddScoped<IApplicationDbContext>(provider =>
+    provider.GetRequiredService<ApplicationDbContext>());
 
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
