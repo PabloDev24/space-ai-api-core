@@ -6,12 +6,14 @@ using SmartSpaces.Application;
 using SmartSpaces.Application.Common.Interfaces;
 using SmartSpaces.Infrastructure.Persistence;
 using SmartSpaces.Infrastructure.Security;
+using SmartSpaces.Infrastructure.Services;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 builder.Services.AddScoped<IQrCodeService, QrCodeService>();
+builder.Services.AddSingleton<ICacheService, CacheService>(); // Usamos Singleton para mantener viva la conexión a Redis|
 builder.Services.AddApplicationServices();
 builder.Services.AddControllers();
 
