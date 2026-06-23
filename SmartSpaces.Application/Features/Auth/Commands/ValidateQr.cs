@@ -4,7 +4,7 @@ using SmartSpaces.Application.Common.Interfaces;
 
 namespace SmartSpaces.Application.Features.Auth.Commands.ValidateQr;
 
-public record ValidateQrCommand(string QrToken) : IRequest<QrValidationResponse>;
+public record ValidateQrCommand(string QrToken, string DeviceId = "Torniquete_Principal") : IRequest<QrValidationResponse>;
 public record QrValidationResponse(bool IsValid, string Message, ValidatedUserDto? User);
 public record ValidatedUserDto(Guid Id, string Name, string Email, string? Folio, string Role);
 
@@ -12,11 +12,13 @@ public class ValidateQrCommandHandler : IRequestHandler<ValidateQrCommand, QrVal
 {
     private readonly IApplicationDbContext _context;
     private readonly IQrCodeService _qrCodeService;
+    private readonly ICacheService _cacheService;
 
-    public ValidateQrCommandHandler(IApplicationDbContext context, IQrCodeService qrCodeService)
+    public ValidateQrCommandHandler(IApplicationDbContext context, IQrCodeService qrCodeService, ICacheService cacheService)
     {
         _context = context;
         _qrCodeService = qrCodeService;
+        _cacheService = cacheService;
     }
 
     public async Task<QrValidationResponse> Handle(ValidateQrCommand request, CancellationToken cancellationToken)
@@ -44,6 +46,8 @@ public class ValidateQrCommandHandler : IRequestHandler<ValidateQrCommand, QrVal
         {
             return new QrValidationResponse(false, "El usuario asociado al QR ya no existe.", null);
         }
+
+        await _cacheService.SetActiveSessionAsync(user.Id, request.DeviceId);
 
         // Acceso exitoso, devolvemos el perfil completo que necesita el torniquete
         var userDto = new ValidatedUserDto(user.Id, user.Name, user.Email, user.Folio, user.Role);
