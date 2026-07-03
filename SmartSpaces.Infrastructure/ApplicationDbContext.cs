@@ -10,6 +10,7 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<User> Users => Set<User>();
     public DbSet<Session> Sessions => Set<Session>();
     public DbSet<KnowledgeQuery> KnowledgeQueries => Set<KnowledgeQuery>();
+    public DbSet<AccessLog> AccessLogs => Set<AccessLog>();
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -45,6 +46,19 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
             entity.HasOne(q => q.User)
                     .WithMany()
                     .HasForeignKey(q => q.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<AccessLog>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.DeviceId).HasMaxLength(100);
+            entity.Property(e => e.Direction).HasMaxLength(10);
+
+            entity.HasOne(a => a.User)
+                    .WithMany()
+                    .HasForeignKey(a => a.UserId)
                     .OnDelete(DeleteBehavior.Cascade);
         });
     }
