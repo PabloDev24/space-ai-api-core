@@ -13,6 +13,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 builder.Services.AddScoped<IQrCodeService, QrCodeService>();
+builder.Services.AddScoped<ICartService, SimulatedCartService>(); // Carrito simulado (sin hardware, docs/00 §3.4)
 builder.Services.AddSingleton<ICacheService, CacheService>(); // Usamos Singleton para mantener viva la conexión a Redis|
 builder.Services.AddApplicationServices();
 builder.Services.AddControllers();
