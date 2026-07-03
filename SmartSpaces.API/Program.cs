@@ -17,6 +17,14 @@ builder.Services.AddSingleton<ICacheService, CacheService>(); // Usamos Singleto
 builder.Services.AddApplicationServices();
 builder.Services.AddControllers();
 
+// Cliente HTTP tipado hacia el microservicio RAG (FastAPI)
+var ragBaseUrl = builder.Configuration["RAG_BASE_URL"] ?? throw new InvalidOperationException("RAG_BASE_URL no configurado.");
+builder.Services.AddHttpClient<IRagService, RagHttpService>(client =>
+{
+    client.BaseAddress = new Uri(ragBaseUrl);
+    client.Timeout = TimeSpan.FromSeconds(15);
+});
+
 // CONFIGURACIÓN DE AUTHENTICATION CON JWT BEARER
 var secretKey = builder.Configuration["JwtSettings:Secret"] ?? throw new InvalidOperationException();
 builder.Services.AddAuthentication(options =>
