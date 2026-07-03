@@ -9,6 +9,7 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
 
     public DbSet<User> Users => Set<User>();
     public DbSet<Session> Sessions => Set<Session>();
+    public DbSet<KnowledgeQuery> KnowledgeQueries => Set<KnowledgeQuery>();
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -31,6 +32,19 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
             entity.HasOne(s => s.User)
                     .WithMany(u => u.Sessions)
                     .HasForeignKey(s => s.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<KnowledgeQuery>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.Source).HasMaxLength(50);
+            entity.Property(e => e.Question).HasMaxLength(1000);
+
+            entity.HasOne(q => q.User)
+                    .WithMany()
+                    .HasForeignKey(q => q.UserId)
                     .OnDelete(DeleteBehavior.Cascade);
         });
     }
