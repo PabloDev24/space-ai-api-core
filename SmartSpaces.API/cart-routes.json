@@ -1,0 +1,23 @@
+{
+  "CartRoutes": {
+    "Calibration": {
+      "inchesPerSecond": 16.9,
+      "turnDegreesPerSecond": 160,
+      "turnOffsetDegrees": -38
+    },
+    "ReturnAliases": [ "regrésate", "regresate", "regresa", "regresar", "vuelve al inicio", "regresa al inicio", "llévame de regreso" ],
+    "Destinations": [
+      {
+        "destinationCode": "EDIFICIO_F",
+        "displayName": "Edificio F",
+        "aliases": [ "edificio f", "edificio efe" ],
+        "steps": [
+          { "command": "adelante", "distanceInches": 33.8 },
+          { "command": "izquierda", "degrees": 90 },
+          { "command": "adelante", "distanceInches": 33.8 },
+          { "command": "stop" }
+        ]
+      }
+    ]
+  }
+}

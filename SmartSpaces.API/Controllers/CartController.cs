@@ -1,8 +1,10 @@
+using System.IdentityModel.Tokens.Jwt;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SmartSpaces.Application.Features.Cart.Commands.Navigate;
 using SmartSpaces.Application.Features.Cart.Commands.Query;
+using SmartSpaces.Application.Features.Cart.Commands.VoiceInteract;
 using SmartSpaces.Application.Features.Cart.Queries.GetStatus;
 
 namespace SmartSpaces.API.Controllers;
@@ -64,4 +66,31 @@ public class CartController : ControllerBase
             return BadRequest(new { error = ex.Message });
         }
     }
+
+    // Navegación guiada por voz o pregunta libre (RAG). Anónimo: sesión ligera sin login
+    // obligatorio (docs/00 §3.4); si viene un JWT válido se personaliza la respuesta.
+    [HttpPost("voice")] // POST: /api/cart/voice
+    [AllowAnonymous]
+    public async Task<IActionResult> Voice([FromBody] VoiceCartRequest request)
+    {
+        try
+        {
+            Guid? userId = null;
+            var sub = User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
+            if (Guid.TryParse(sub, out var parsedUserId))
+            {
+                userId = parsedUserId;
+            }
+
+            var command = new VoiceCartCommand(userId, request.Transcript);
+            var result = await _mediator.Send(command);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
+    }
 }
+
+public record VoiceCartRequest(string Transcript);

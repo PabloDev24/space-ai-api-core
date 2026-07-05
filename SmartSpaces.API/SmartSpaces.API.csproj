@@ -23,4 +23,8 @@
     <ProjectReference Include="..\SmartSpaces.Infrastructure\SmartSpaces.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="cart-routes.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>

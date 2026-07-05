@@ -4,6 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 using SmartSpaces.API.Exceptions;
 using SmartSpaces.Application;
 using SmartSpaces.Application.Common.Interfaces;
+using SmartSpaces.Application.Common.Options;
 using SmartSpaces.Infrastructure.Persistence;
 using SmartSpaces.Infrastructure.Security;
 using SmartSpaces.Infrastructure.Services;
@@ -11,9 +12,16 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Catálogo de destinos del carrito (navegación guiada por voz). reloadOnChange:true permite
+// agregar/editar rutas sin recompilar (docs/00 §3.4).
+builder.Configuration.AddJsonFile("cart-routes.json", optional: false, reloadOnChange: true);
+builder.Services.Configure<CartRoutesOptions>(builder.Configuration.GetSection("CartRoutes"));
+
 builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 builder.Services.AddScoped<IQrCodeService, QrCodeService>();
 builder.Services.AddScoped<ICartService, SimulatedCartService>(); // Carrito simulado (sin hardware, docs/00 §3.4)
+builder.Services.AddScoped<ICartMovementPublisher, MqttCartMovementPublisher>(); // MQTT real hacia el ESP32 del carrito
+builder.Services.AddSingleton<ICartLastRouteTracker, InMemoryCartLastRouteTracker>(); // Un solo carrito físico: estado en memoria
 builder.Services.AddSingleton<ICacheService, CacheService>(); // Usamos Singleton para mantener viva la conexión a Redis|
 builder.Services.AddApplicationServices();
 builder.Services.AddControllers();
