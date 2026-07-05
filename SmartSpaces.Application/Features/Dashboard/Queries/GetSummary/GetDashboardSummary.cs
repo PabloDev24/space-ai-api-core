@@ -34,8 +34,9 @@ public class GetDashboardSummaryQueryHandler : IRequestHandler<GetDashboardSumma
         var accessToday = await _context.AccessLogs.CountAsync(a => a.Timestamp >= todayUtc, cancellationToken);
         var queriesToday = await _context.KnowledgeQueries.CountAsync(q => q.CreatedAt >= todayUtc, cancellationToken);
 
-        // No existe tabla de dispositivos aún: conteo simulado para la demo (docs/00 §3.5, P2).
-        var devices = new DashboardDevicesDto(Online: 3, Offline: 0);
+        var onlineDevices = await _context.Devices.CountAsync(d => d.Status == "ONLINE", cancellationToken);
+        var offlineDevices = await _context.Devices.CountAsync(d => d.Status != "ONLINE", cancellationToken);
+        var devices = new DashboardDevicesDto(Online: onlineDevices, Offline: offlineDevices);
 
         return new DashboardSummaryDto(usersCount, activeSessions, accessToday, queriesToday, devices);
     }
