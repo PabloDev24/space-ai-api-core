@@ -2,6 +2,7 @@ using System.IdentityModel.Tokens.Jwt;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using SmartSpaces.Application.Features.Cart.Commands.Navigate;
 using SmartSpaces.Application.Features.Cart.Commands.Query;
 using SmartSpaces.Application.Features.Cart.Commands.VoiceInteract;
@@ -13,6 +14,7 @@ namespace SmartSpaces.API.Controllers;
 [ApiController]
 [Route("api/[controller]")] // Esto mapea a: /api/cart
 [Authorize]
+[EnableRateLimiting("cart")] // 10 req/min por IP — voice/speech son AllowAnonymous, sin esto no hay freno de abuso/costo
 public class CartController : ControllerBase
 {
     private readonly IMediator _mediator;

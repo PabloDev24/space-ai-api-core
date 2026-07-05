@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using SmartSpaces.API.Exceptions;
@@ -9,6 +10,7 @@ using SmartSpaces.Infrastructure.Persistence;
 using SmartSpaces.Infrastructure.Security;
 using SmartSpaces.Infrastructure.Services;
 using System.Text;
+using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -80,6 +82,29 @@ builder.Services.AddScoped<IApplicationDbContext>(provider =>
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 
+// Límite por IP en /api/cart/* (voice y speech son AllowAnonymous: sin esto, cualquiera
+// con la URL puede saturar el RAG/MQTT o gastar la cuota de Azure Speech sin login de por medio).
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.OnRejected = async (context, cancellationToken) =>
+    {
+        context.HttpContext.Response.ContentType = "application/json";
+        await context.HttpContext.Response.WriteAsync(
+            "{\"error\":\"Demasiadas solicitudes, intenta de nuevo en un momento.\"}", cancellationToken);
+    };
+
+    options.AddPolicy("cart", httpContext =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+            factory: _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 10,
+                Window = TimeSpan.FromMinutes(1),
+                QueueLimit = 0,
+            }));
+});
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -105,6 +130,7 @@ app.UseHttpsRedirection();
 app.UseCors("Frontends");
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseRateLimiter();
 app.MapControllers();
 
 app.Run();
