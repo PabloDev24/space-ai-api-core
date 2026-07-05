@@ -6,6 +6,7 @@ using SmartSpaces.Application.Features.Cart.Commands.Navigate;
 using SmartSpaces.Application.Features.Cart.Commands.Query;
 using SmartSpaces.Application.Features.Cart.Commands.VoiceInteract;
 using SmartSpaces.Application.Features.Cart.Queries.GetStatus;
+using SmartSpaces.Application.Features.Cart.Queries.SynthesizeSpeech;
 
 namespace SmartSpaces.API.Controllers;
 
@@ -91,6 +92,23 @@ public class CartController : ControllerBase
             return BadRequest(new { error = ex.Message });
         }
     }
+
+    // Voz IA (Azure Speech). El front solo pega aquí cuando el usuario elige manualmente
+    // el modo "Azure" en la tablet — por defecto usa la síntesis nativa del navegador,
+    // que no pasa por el backend ni consume la cuota de Azure.
+    [HttpPost("speech")] // POST: /api/cart/speech
+    [AllowAnonymous]
+    public async Task<IActionResult> Speech([FromBody] SpeechRequest request)
+    {
+        var result = await _mediator.Send(new SynthesizeSpeechQuery(request.Text));
+        if (!result.Success || result.AudioBytes == null)
+        {
+            return StatusCode(503, new { error = "No se pudo generar audio en este momento." });
+        }
+
+        return File(result.AudioBytes, result.ContentType);
+    }
 }
 
 public record VoiceCartRequest(string Transcript);
+public record SpeechRequest(string Text);

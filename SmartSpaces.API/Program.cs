@@ -34,6 +34,19 @@ builder.Services.AddHttpClient<IRagService, RagHttpService>(client =>
     client.Timeout = TimeSpan.FromSeconds(15);
 });
 
+// Cliente HTTP tipado hacia Azure Speech (voz IA, uso manual/opcional desde el front).
+// Si AZURE_SPEECH_REGION no está configurado, BaseAddress queda null y el servicio
+// responde Success:false sin intentar la llamada (ver AzureSpeechSynthesizer).
+var azureSpeechRegion = builder.Configuration["AZURE_SPEECH_REGION"];
+builder.Services.AddHttpClient<ISpeechSynthesisService, AzureSpeechSynthesizer>(client =>
+{
+    if (!string.IsNullOrWhiteSpace(azureSpeechRegion))
+    {
+        client.BaseAddress = new Uri($"https://{azureSpeechRegion}.tts.speech.microsoft.com/");
+    }
+    client.Timeout = TimeSpan.FromSeconds(10);
+});
+
 // CONFIGURACIÓN DE AUTHENTICATION CON JWT BEARER
 var secretKey = builder.Configuration["JwtSettings:Secret"] ?? throw new InvalidOperationException();
 builder.Services.AddAuthentication(options =>
