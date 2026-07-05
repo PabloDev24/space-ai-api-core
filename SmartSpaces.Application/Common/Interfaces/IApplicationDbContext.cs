@@ -7,5 +7,8 @@ public interface IApplicationDbContext
 {
     DbSet<User> Users { get; }
     DbSet<Session> Sessions { get; }
+    DbSet<KnowledgeQuery> KnowledgeQueries { get; }
+    DbSet<AccessLog> AccessLogs { get; }
+    DbSet<Device> Devices { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }

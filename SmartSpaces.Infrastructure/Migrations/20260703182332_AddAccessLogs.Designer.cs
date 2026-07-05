@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using SmartSpaces.Infrastructure.Persistence;
@@ -11,9 +12,11 @@ using SmartSpaces.Infrastructure.Persistence;
 namespace SmartSpaces.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260703182332_AddAccessLogs")]
+    partial class AddAccessLogs
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -52,99 +55,6 @@ namespace SmartSpaces.Infrastructure.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("AccessLogs");
-                });
-
-            modelBuilder.Entity("SmartSpaces.Domain.Entities.Device", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<DateTime>("LastSeen")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Location")
-                        .HasMaxLength(150)
-                        .HasColumnType("character varying(150)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("character varying(150)");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
-
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("character varying(30)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Code")
-                        .IsUnique();
-
-                    b.ToTable("Devices");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("11111111-1111-1111-1111-111111111101"),
-                            Code = "cart-tablet-001",
-                            LastSeen = new DateTime(2026, 7, 1, 18, 0, 0, 0, DateTimeKind.Utc),
-                            Location = "Pasillo Principal",
-                            Name = "Carrito Inteligente Asistido",
-                            Status = "ONLINE",
-                            Type = "CART"
-                        },
-                        new
-                        {
-                            Id = new Guid("11111111-1111-1111-1111-111111111102"),
-                            Code = "access-tablet-001",
-                            LastSeen = new DateTime(2026, 7, 1, 18, 0, 0, 0, DateTimeKind.Utc),
-                            Location = "Entrada Principal",
-                            Name = "Acceso Principal",
-                            Status = "ONLINE",
-                            Type = "ACCESS"
-                        },
-                        new
-                        {
-                            Id = new Guid("11111111-1111-1111-1111-111111111103"),
-                            Code = "side-tablet-001",
-                            LastSeen = new DateTime(2026, 7, 1, 18, 0, 0, 0, DateTimeKind.Utc),
-                            Location = "Recepción",
-                            Name = "SIDE Tablet Principal",
-                            Status = "OFFLINE",
-                            Type = "SIDE"
-                        },
-                        new
-                        {
-                            Id = new Guid("11111111-1111-1111-1111-111111111104"),
-                            Code = "sensor-001",
-                            LastSeen = new DateTime(2026, 7, 1, 18, 0, 0, 0, DateTimeKind.Utc),
-                            Location = "Edificio B",
-                            Name = "Sensor de Ocupación B-204",
-                            Status = "ONLINE",
-                            Type = "SENSOR"
-                        },
-                        new
-                        {
-                            Id = new Guid("11111111-1111-1111-1111-111111111105"),
-                            Code = "camera-001",
-                            LastSeen = new DateTime(2026, 7, 1, 18, 0, 0, 0, DateTimeKind.Utc),
-                            Location = "Entrada Principal",
-                            Name = "Cámara Entrada Principal",
-                            Status = "ONLINE",
-                            Type = "CAMERA"
-                        });
                 });
 
             modelBuilder.Entity("SmartSpaces.Domain.Entities.KnowledgeQuery", b =>
@@ -263,18 +173,6 @@ namespace SmartSpaces.Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("Users");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("22222222-2222-2222-2222-222222222201"),
-                            Email = "daniel@utl.edu.mx",
-                            Folio = "20260001",
-                            Name = "Daniel Ojeda Luna",
-                            PasswordHash = "$2a$11$hIrQTKYZvJcz/HbzJVI6O.glhMiSwEqstSC2emQIUchXjltox.fci",
-                            QrExpiry = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Role = "admin"
-                        });
                 });
 
             modelBuilder.Entity("SmartSpaces.Domain.Entities.AccessLog", b =>

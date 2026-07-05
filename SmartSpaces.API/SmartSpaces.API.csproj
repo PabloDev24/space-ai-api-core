@@ -15,12 +15,18 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.2" />
+    <PackageReference Include="Serilog.AspNetCore" Version="10.0.0" />
+    <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="10.2.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\SmartSpaces.Application\SmartSpaces.Application.csproj" />
     <ProjectReference Include="..\SmartSpaces.Infrastructure\SmartSpaces.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="cart-routes.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>
