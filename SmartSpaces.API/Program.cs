@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Serilog;
 using SmartSpaces.API.Exceptions;
 using SmartSpaces.Application;
 using SmartSpaces.Application.Common.Interfaces;
@@ -13,6 +14,16 @@ using System.Text;
 using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Logger estructurado: consola (siempre) + archivo rotado diario (14 días) en logs/.
+// Reemplaza el logging por defecto — el resto del código no cambia, sigue usando
+// ILogger<T> normal (AzureSpeechSynthesizer, MqttCartMovementPublisher, etc.).
+builder.Host.UseSerilog((context, configuration) => configuration
+    .MinimumLevel.Information()
+    .MinimumLevel.Override("Microsoft.AspNetCore", Serilog.Events.LogEventLevel.Warning)
+    .Enrich.FromLogContext()
+    .WriteTo.Console()
+    .WriteTo.File("logs/spaceia-.log", rollingInterval: RollingInterval.Day, retainedFileCountLimit: 14));
 
 // Catálogo de destinos del carrito (navegación guiada por voz). reloadOnChange:true permite
 // agregar/editar rutas sin recompilar (docs/00 §3.4).
@@ -121,6 +132,8 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+app.UseSerilogRequestLogging(); // log estructurado por request: método, ruta, status, duración
+
 app.UseExceptionHandler(new ExceptionHandlerOptions());
 
 app.UseSwagger();
@@ -133,4 +146,11 @@ app.UseAuthorization();
 app.UseRateLimiter();
 app.MapControllers();
 
-app.Run();
+try
+{
+    app.Run();
+}
+finally
+{
+    Log.CloseAndFlush(); // asegura que el sink de archivo vacíe el buffer al apagar
+}
