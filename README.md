@@ -77,6 +77,38 @@ dotnet run
 
 > ℹ️ **Nota:** Para el método manual, necesitas una instancia de PostgreSQL corriendo localmente. Consulta la **[Guía de Instalación Local](./docs/guides/LOCAL_SETUP.md)** para configurar la base de datos y migraciones.
 
+> ⚠️ **`dotnet run` sin más puede fallar con `RAG_BASE_URL no configurado`** si corres con `--no-launch-profile` (por ejemplo, para forzar el bind a `0.0.0.0` — ver más abajo). Ese flag también se salta `ASPNETCORE_ENVIRONMENT=Development` que trae `launchSettings.json`, y sin eso no carga `appsettings.Development.json` (donde vive `RAG_BASE_URL`). Si usas `--no-launch-profile`, exporta ambas variables:
+> ```bash
+> export ASPNETCORE_ENVIRONMENT="Development"
+> export ASPNETCORE_URLS="http://0.0.0.0:5274"
+> dotnet run --no-launch-profile
+> ```
+
+---
+
+### 3.1 Probar contra un dispositivo físico (app móvil o tablet real)
+
+Por default, `dotnet run` escucha solo en `localhost` (`launchSettings.json` → `applicationUrl`), inalcanzable desde un celular/tablet en la misma red. Dos formas de exponerlo sin tocar ese archivo compartido:
+
+**Opción A — bind a `0.0.0.0` + IP de LAN:**
+```bash
+export ASPNETCORE_ENVIRONMENT="Development"
+export ASPNETCORE_URLS="http://0.0.0.0:5274"
+dotnet run --no-launch-profile
+```
+Requiere firewall abierto en el puerto y el dispositivo en la misma red. Si corres esto dentro de **WSL** (Windows), la IP de LAN de Windows no llega sola a WSL — necesitas además reenviar el puerto desde Windows (PowerShell como administrador):
+```powershell
+netsh interface portproxy add v4tov4 listenaddress=0.0.0.0 listenport=5274 connectaddress=<IP_INTERNA_WSL> connectport=5274
+New-NetFirewallRule -DisplayName "SmartSpaces API Dev" -Direction Inbound -LocalPort 5274 -Protocol TCP -Action Allow
+```
+La IP interna de WSL (`hostname -I` dentro de WSL) cambia en cada reinicio — hay que rehacer el proxy.
+
+**Opción B — túnel (ngrok), más simple:**
+```bash
+ngrok http 5274
+```
+Da una URL pública (`https://algo.ngrok-free.app`) que tunela directo, sin firewall ni portproxy, funciona hasta en datos móviles. La URL cambia cada reinicio de `ngrok`; no lo dejes corriendo sin vigilancia (expone el backend local a internet mientras el túnel viva).
+
 ---
 
 ### 4. Verificar el Estado
