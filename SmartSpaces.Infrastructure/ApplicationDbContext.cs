@@ -133,14 +133,15 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
         );
 
         // Usuario admin demo para poder iniciar sesión en el panel una vez activados los guards de rol.
-        // Password demo: "Admin123!" (hash BCrypt.Net-Next 4.2.0 pre-calculado — no generar en runtime, rompería la migration).
+        // Password demo: "SpaceIA2026!" (hash BCrypt.Net-Next 4.2.0 pre-calculado — no generar en runtime, rompería la migration).
+        // Rotado 2026-07-12: el valor anterior ("Admin123!") quedó expuesto en el historial de git de este repo.
         modelBuilder.Entity<User>().HasData(
             new User
             {
                 Id = Guid.Parse("22222222-2222-2222-2222-222222222201"),
                 Name = "Daniel Ojeda Luna",
                 Email = "daniel@utl.edu.mx",
-                PasswordHash = "$2a$11$hIrQTKYZvJcz/HbzJVI6O.glhMiSwEqstSC2emQIUchXjltox.fci",
+                PasswordHash = "$2a$11$tHMJ.UMKAT.LxfTpqbtRz.Trd4yOSVBl1ugCtQMeEK1dK8gVIq4KK",
                 Folio = "20260001",
                 Role = "admin",
                 QrToken = null,

@@ -274,7 +274,7 @@ namespace SmartSpaces.Infrastructure.Migrations
                             Email = "daniel@utl.edu.mx",
                             Folio = "20260001",
                             Name = "Daniel Ojeda Luna",
-                            PasswordHash = "$2a$11$hIrQTKYZvJcz/HbzJVI6O.glhMiSwEqstSC2emQIUchXjltox.fci",
+                            PasswordHash = "$2a$11$tHMJ.UMKAT.LxfTpqbtRz.Trd4yOSVBl1ugCtQMeEK1dK8gVIq4KK",
                             QrExpiry = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Role = "admin"
                         });
