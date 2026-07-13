@@ -81,7 +81,7 @@ dotnet run
 
 ### 4. Verificar el Estado
 
-Abre **[http://localhost:8080/swagger](http://localhost:8080/swagger)** (Docker) o **[http://localhost:5274/swagger](http://localhost:5274/swagger)** (Manual) para explorar la documentación interactiva de la API.
+Abre **[http://localhost:8080/swagger](http://localhost:8080/swagger)** (Docker) o **[http://localhost:5043/swagger](http://localhost:5043/swagger)** (Manual) para explorar la documentación interactiva de la API.
 
 ---
 
