@@ -24,7 +24,9 @@ public class CartController : ControllerBase
         _mediator = mediator;
     }
 
+    // Anónimo: igual que voice/speech, la tableta del carrito no exige login (docs/00 §3.4).
     [HttpGet("status")] // GET: /api/cart/status
+    [AllowAnonymous]
     public async Task<IActionResult> GetStatus()
     {
         try
@@ -38,7 +40,9 @@ public class CartController : ControllerBase
         }
     }
 
+    // Anónimo: userId viaja explícito en el body, no depende de JWT (docs/00 §3.4).
     [HttpPost("navigate")] // POST: /api/cart/navigate
+    [AllowAnonymous]
     public async Task<IActionResult> Navigate([FromBody] NavigateCartCommand command)
     {
         try
@@ -52,7 +56,9 @@ public class CartController : ControllerBase
         }
     }
 
+    // Anónimo: userId viaja explícito en el body, no depende de JWT (docs/00 §3.4).
     [HttpPost("query")] // POST: /api/cart/query
+    [AllowAnonymous]
     public async Task<IActionResult> Query([FromBody] CartQueryCommand command)
     {
         try
