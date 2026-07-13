@@ -45,7 +45,7 @@ namespace SmartSpaces.Infrastructure.Migrations
             migrationBuilder.InsertData(
                 table: "Users",
                 columns: new[] { "Id", "Email", "Folio", "Name", "PasswordHash", "QrExpiry", "QrToken", "Role" },
-                values: new object[] { new Guid("22222222-2222-2222-2222-222222222201"), "daniel@utl.edu.mx", "20260001", "Daniel Ojeda Luna", "$2a$11$hIrQTKYZvJcz/HbzJVI6O.glhMiSwEqstSC2emQIUchXjltox.fci", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, "admin" });
+                values: new object[] { new Guid("22222222-2222-2222-2222-222222222201"), "daniel@utl.edu.mx", "20260001", "Daniel Ojeda Luna", "$2a$11$tHMJ.UMKAT.LxfTpqbtRz.Trd4yOSVBl1ugCtQMeEK1dK8gVIq4KK", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, "admin" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Devices_Code",

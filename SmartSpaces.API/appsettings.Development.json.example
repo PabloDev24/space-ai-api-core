@@ -1,0 +1,32 @@
+{
+  "_comment": "Plantilla. El mecanismo real para ConnectionStrings/JwtSettings es `dotnet user-secrets` (ver README.md) — este archivo solo documenta el shape esperado. Si prefieres no usar user-secrets, puedes copiar esto a appsettings.Development.json (ya está en .gitignore, es seguro) y completar los valores reales ahí.",
+
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+
+  "ConnectionStrings": {
+    "DefaultConnection": "Host=localhost;Port=5432;Database=smartspaces;Username=postgres;Password=postgres"
+  },
+
+  "JwtSettings": {
+    "Secret": "CHANGE_ME_local_dev_secret_min_32_chars",
+    "Issuer": "SmartSpaces",
+    "Audience": "SmartSpacesClient"
+  },
+
+  "RAG_BASE_URL": "http://localhost:8000",
+  "AllowedOrigins": [ "http://localhost:4200", "http://localhost:4201" ],
+
+  "MQTT_BROKER_HOST": "",
+  "MQTT_BROKER_PORT": "8883",
+  "MQTT_USERNAME": "",
+  "MQTT_PASSWORD": "",
+  "MQTT_TOPIC": "coche1/comandos",
+  "MQTT_USE_TLS": "true",
+
+  "AZURE_SPEECH_VOICE": "es-MX-DaliaNeural"
+}

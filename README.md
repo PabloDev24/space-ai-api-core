@@ -23,12 +23,13 @@ Este proyecto implementa una **Arquitectura Limpia (Clean Architecture)** orient
 - **Arquitectura:** Modular con desacoplamiento de capas (Domain, Application, Infrastructure, API).
 - **Persistencia:** PostgreSQL 15 con Entity Framework Core.
 - **Patrones:** CQRS con MediatR, Repository Pattern, y FluentValidation.
-- **Contenedores:** Docker & Docker Compose para orquestación completa.
+- **Contenedores:** Docker Compose para levantar PostgreSQL en desarrollo local (la API en sí corre nativa con `dotnet run`, no está containerizada).
 
-## 📖 Documentación Detallada
-Consulta nuestro índice de documentación en [`docs/README.md`](./docs/README.md)
-*   [Guía de Despliegue](./docs/infrastructure/DEPLOYMENT.md)
-*   [Solución de Problemas Docker](./docs/troubleshooting/DOCKER_ERRORS.md)
+## 📖 Documentación del ecosistema
+Este repo es uno de los 4 subproyectos de SpaceIA. La fuente de verdad del proyecto completo vive en la raíz del monorepo:
+- [`docs/00_SPACEIA_SOURCE_OF_TRUTH.txt`](../docs/00_SPACEIA_SOURCE_OF_TRUTH.txt) — alcance, decisiones, prioridades.
+- [`docs/03_API_MINIMUM_CONTRACTS.txt`](../docs/03_API_MINIMUM_CONTRACTS.txt) — contratos mínimos de API.
+- [`docs/04_AZURE_MIGRATION_CHECKLIST.txt`](../docs/04_AZURE_MIGRATION_CHECKLIST.txt) — despliegue a Azure.
 
 ---
 
@@ -36,52 +37,89 @@ Consulta nuestro índice de documentación en [`docs/README.md`](./docs/README.m
 
 ### 1. Prerrequisitos
 
-Asegúrate de tener instaladas las siguientes herramientas:
-
 | Herramienta | Versión mínima | Descarga |
 |---|---|---|
-| **Docker Desktop** | 4.x o superior | [docker.com](https://www.docker.com/) |
+| **Docker Desktop** | 4.x o superior | [docker.com](https://www.docker.com/) (solo para levantar Postgres — si ya tienes un Postgres 15 local puedes saltarte esto) |
 | **.NET SDK** | 10.0 | [dotnet.microsoft.com](https://dotnet.microsoft.com/) |
 | **Git** | última versión | [git-scm.com](https://git-scm.com/) |
 
 ---
 
-### 2. Método A: Levantar con Docker (Recomendado)
-
-La forma más rápida de iniciar un entorno consistente con Base de Datos y Proxy.
+### 2. Base de datos: PostgreSQL
 
 ```bash
-# Levantar todo el stack
 docker compose -f docker-compose.dev.yml up -d
-
-# Probar Health Check
-curl http://localhost:8080/health
+docker compose -f docker-compose.dev.yml ps   # confirmar que "postgres" está healthy
 ```
+Esto levanta un Postgres 15 en `localhost:5432` con los valores de `.env` (copia `.env.example` si no existe). Si ya tienes tu propio Postgres 15 corriendo, puedes omitir este paso y apuntar el connection string del siguiente paso a tu instancia.
 
 ---
 
-### 3. Método B: Ejecución Manual (Local)
+### 3. Secretos locales: `dotnet user-secrets`
 
-Ideal para desarrollo activo y depuración rápida sin contenedores para la aplicación.
+Este proyecto usa [user-secrets](https://learn.microsoft.com/aspnet/core/security/app-secrets) para credenciales de desarrollo — nunca van al repo. Ya está configurado (`SmartSpaces.API.csproj` trae `UserSecretsId`), solo falta cargarlos:
 
 ```bash
-# 1. Navegar a la carpeta de la API
 cd SmartSpaces.API
+dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Host=localhost;Port=5432;Database=smartspaces;Username=postgres;Password=postgres"
+dotnet user-secrets set "JwtSettings:Secret" "<genera tu propio secret local, min 32 caracteres>"
+dotnet user-secrets set "JwtSettings:Issuer" "SmartSpaces"
+dotnet user-secrets set "JwtSettings:Audience" "SmartSpacesClient"
+```
 
-# 2. Restaurar dependencias
+`appsettings.Development.json.example` documenta el resto de valores no-sensibles (`RAG_BASE_URL`, `AllowedOrigins`, `MQTT_*`, `AZURE_SPEECH_VOICE`) — ya vienen precargados en tu `appsettings.Development.json` local (gitignored). Si prefieres no usar user-secrets, puedes copiar el `.example` a `appsettings.Development.json` y completar `ConnectionStrings`/`JwtSettings` ahí directamente — sigue siendo seguro, el archivo real está en `.gitignore`.
+
+Credenciales opcionales (síntesis de voz, MQTT del carrito) también van por `user-secrets` si las necesitas — ver `docs/04_AZURE_MIGRATION_CHECKLIST.txt` §2 para la lista completa de claves.
+
+---
+
+### 4. Ejecutar la API
+
+```bash
+cd SmartSpaces.API
 dotnet restore
-
-# 3. Ejecutar la aplicación
 dotnet run
 ```
 
-> ℹ️ **Nota:** Para el método manual, necesitas una instancia de PostgreSQL corriendo localmente. Consulta la **[Guía de Instalación Local](./docs/guides/LOCAL_SETUP.md)** para configurar la base de datos y migraciones.
+Por defecto (`launchSettings.json`, perfil `http`) queda escuchando en `http://localhost:5043` (perfil `https`: `https://localhost:7024`).
+
+> ⚠️ **`dotnet run --no-launch-profile` puede fallar con `RAG_BASE_URL no configurado`.** Ese flag se salta `ASPNETCORE_ENVIRONMENT=Development` que trae `launchSettings.json`, y sin eso no carga `appsettings.Development.json`/user-secrets. Si necesitas `--no-launch-profile` (por ejemplo, para forzar el bind a `0.0.0.0`), exporta el entorno explícitamente:
+> ```bash
+> export ASPNETCORE_ENVIRONMENT="Development"
+> export ASPNETCORE_URLS="http://0.0.0.0:5043"
+> dotnet run --no-launch-profile
+> ```
 
 ---
 
-### 4. Verificar el Estado
+### 4.1 Probar contra un dispositivo físico (app móvil o tablet real)
 
-Abre **[http://localhost:8080/swagger](http://localhost:8080/swagger)** (Docker) o **[http://localhost:5043/swagger](http://localhost:5043/swagger)** (Manual) para explorar la documentación interactiva de la API.
+Por default, `dotnet run` escucha solo en `localhost` (`launchSettings.json` → `applicationUrl`), inalcanzable desde un celular/tablet en la misma red. Dos formas de exponerlo sin tocar ese archivo compartido:
+
+**Opción A — bind a `0.0.0.0` + IP de LAN:**
+```bash
+export ASPNETCORE_ENVIRONMENT="Development"
+export ASPNETCORE_URLS="http://0.0.0.0:5043"
+dotnet run --no-launch-profile
+```
+Requiere firewall abierto en el puerto y el dispositivo en la misma red. Si corres esto dentro de **WSL** (Windows), la IP de LAN de Windows no llega sola a WSL — necesitas además reenviar el puerto desde Windows (PowerShell como administrador):
+```powershell
+netsh interface portproxy add v4tov4 listenaddress=0.0.0.0 listenport=5043 connectaddress=<IP_INTERNA_WSL> connectport=5043
+New-NetFirewallRule -DisplayName "SmartSpaces API Dev" -Direction Inbound -LocalPort 5043 -Protocol TCP -Action Allow
+```
+La IP interna de WSL (`hostname -I` dentro de WSL) cambia en cada reinicio — hay que rehacer el proxy.
+
+**Opción B — túnel (ngrok), más simple:**
+```bash
+ngrok http 5043
+```
+Da una URL pública (`https://algo.ngrok-free.app`) que tunela directo, sin firewall ni portproxy, funciona hasta en datos móviles. La URL cambia cada reinicio de `ngrok`; no lo dejes corriendo sin vigilancia (expone el backend local a internet mientras el túnel viva).
+
+---
+
+### 5. Verificar el Estado
+
+Abre **[http://localhost:5043/swagger](http://localhost:5043/swagger)** para explorar la documentación interactiva de la API y confirmar que levantó correctamente (no hay endpoint `/health` implementado — Swagger es el smoke-test disponible hoy).
 
 ---
 
@@ -89,11 +127,13 @@ Abre **[http://localhost:8080/swagger](http://localhost:8080/swagger)** (Docker)
 
 | Comando | Descripción |
 |---|---|
-| `docker compose -f docker-compose.dev.yml up -d` | Inicia el stack de desarrollo completo |
-| `docker compose -f docker-compose.dev.yml logs -f api` | Ver logs de la API en tiempo real |
+| `docker compose -f docker-compose.dev.yml up -d` | Levanta Postgres para desarrollo local |
+| `docker compose -f docker-compose.dev.yml logs -f postgres` | Ver logs de Postgres en tiempo real |
+| `dotnet user-secrets list` | Ver los secretos locales configurados (desde `SmartSpaces.API/`) |
 | `dotnet build` | Compila la solución localmente |
 | `dotnet test` | Ejecuta las pruebas unitarias y de integración |
 | `dotnet ef migrations add Nombre` | Crea una nueva migración de base de datos |
+| `dotnet ef database update` | Aplica migraciones pendientes contra Postgres |
 
 ---
 

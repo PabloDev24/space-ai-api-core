@@ -25,3 +25,21 @@ jobs:
 
       - name: Test
         run: dotnet test --no-build --configuration Release --verbosity normal
+
+      - name: Doc lint (README accuracy)
+        run: |
+          set -e
+          DEAD=0
+          for f in $(grep -oP '\]\(\.\/docs\/[^)]+\)' README.md | sed -E 's/^\]\(\.\///; s/\)$//' || true); do
+            if [ ! -f "$f" ]; then
+              echo "README.md links to '$f' which does not exist in this repo"
+              DEAD=1
+            fi
+          done
+          if [ "$DEAD" = "1" ]; then exit 1; fi
+
+          PORT=$(jq -r '.profiles.http.applicationUrl' SmartSpaces.API/Properties/launchSettings.json | grep -oP ':\K[0-9]+' | head -1)
+          if [ -z "$PORT" ] || ! grep -q "localhost:$PORT" README.md; then
+            echo "README.md doesn't mention port $PORT (from launchSettings.json http profile) — docs may be stale"
+            exit 1
+          fi

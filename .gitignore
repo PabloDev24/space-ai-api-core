@@ -361,3 +361,15 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# SpaceIA — secretos locales (usar `dotnet user-secrets`, o copiar el .example correspondiente)
+SmartSpaces.API/appsettings.Development.json
+SmartSpaces.API/appsettings.Production.json
+.env
+
+# Claude Code / AI agent tooling (not part of the project)
+.claude/
+.agents/
+.codex/
+.impeccable/
+skills-lock.json
