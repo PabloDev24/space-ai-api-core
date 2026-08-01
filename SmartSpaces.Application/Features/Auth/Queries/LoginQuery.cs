@@ -41,6 +41,13 @@ public class LoginQueryHandler : IRequestHandler<LoginQuery, LoginResponse>
             throw new UnauthorizedAccessException("Credenciales inválidas");
         }
 
+        // Un usuario desactivado desde el panel (PATCH /api/users/{id}/status) conserva su
+        // registro pero no puede volver a entrar.
+        if (string.Equals(user.Status, "Inactivo", StringComparison.OrdinalIgnoreCase))
+        {
+            throw new UnauthorizedAccessException("La cuenta está desactivada. Contacta al administrador.");
+        }
+
         // 3. Mock temporal de tokens (En la siguiente HU montaremos JWT real)
         var accessToken = _jwtTokenGenerator.GenerateAccessToken(user);
         var refreshToken = _jwtTokenGenerator.GenerateRefreshToken();

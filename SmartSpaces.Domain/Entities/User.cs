@@ -12,6 +12,13 @@ namespace SmartSpaces.Domain.Entities
         public required string PasswordHash { get; set; }
         public string? Folio {  get; set; }
         public required string Role { get; set; }
+
+        /// <summary>
+        /// Activo | Inactivo. Un usuario Inactivo conserva su registro pero no puede iniciar sesión
+        /// (ver LoginQueryHandler) — es el switch "Activar/Desactivar" del panel de usuarios.
+        /// </summary>
+        public string Status { get; set; } = "Activo";
+
         public string? QrToken { get; set; }
         public DateTime QrExpiry {  get; set; }
 

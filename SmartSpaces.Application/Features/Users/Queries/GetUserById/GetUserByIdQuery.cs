@@ -27,6 +27,6 @@ public class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, UserLis
             throw new KeyNotFoundException("Usuario no encontrado.");
         }
 
-        return new UserListItemDto(user.Id, user.Name, user.Email, user.Folio, user.Role);
+        return new UserListItemDto(user.Id, user.Name, user.Email, user.Folio, user.Role, user.Status);
     }
 }

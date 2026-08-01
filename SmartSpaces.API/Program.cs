@@ -36,6 +36,7 @@ builder.Services.AddScoped<ICartService, SimulatedCartService>(); // Carrito sim
 builder.Services.AddScoped<ICartMovementPublisher, MqttCartMovementPublisher>(); // MQTT real hacia el ESP32 del carrito
 builder.Services.AddSingleton<ICartLastRouteTracker, InMemoryCartLastRouteTracker>(); // Un solo carrito físico: estado en memoria
 builder.Services.AddSingleton<ICacheService, CacheService>(); // Usamos Singleton para mantener viva la conexión a Redis|
+builder.Services.AddScoped<IDocumentStorage, LocalDocumentStorage>(); // Documentos base del RAG (disco local en dev, Blob Storage en Azure)
 builder.Services.AddApplicationServices();
 builder.Services.AddControllers();
 

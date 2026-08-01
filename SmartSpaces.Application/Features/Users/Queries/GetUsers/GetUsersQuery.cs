@@ -6,7 +6,7 @@ namespace SmartSpaces.Application.Features.Users.Queries.GetUsers;
 
 public record GetUsersQuery(string? Role = null, string? Search = null) : IRequest<IReadOnlyList<UserListItemDto>>;
 
-public record UserListItemDto(Guid Id, string Name, string Email, string? Folio, string Role);
+public record UserListItemDto(Guid Id, string Name, string Email, string? Folio, string Role, string Status);
 
 public class GetUsersQueryHandler : IRequestHandler<GetUsersQuery, IReadOnlyList<UserListItemDto>>
 {
@@ -38,7 +38,7 @@ public class GetUsersQueryHandler : IRequestHandler<GetUsersQuery, IReadOnlyList
 
         return await query
             .OrderBy(u => u.Name)
-            .Select(u => new UserListItemDto(u.Id, u.Name, u.Email, u.Folio, u.Role))
+            .Select(u => new UserListItemDto(u.Id, u.Name, u.Email, u.Folio, u.Role, u.Status))
             .ToListAsync(cancellationToken);
     }
 }
