@@ -37,7 +37,9 @@ builder.Services.AddScoped<ICartMovementPublisher, MqttCartMovementPublisher>();
 builder.Services.AddSingleton<ICartLastRouteTracker, InMemoryCartLastRouteTracker>(); // Un solo carrito físico: estado en memoria
 builder.Services.AddSingleton<ICacheService, CacheService>(); // Usamos Singleton para mantener viva la conexión a Redis|
 builder.Services.AddApplicationServices();
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+        options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase);
 
 // Cliente HTTP tipado hacia el microservicio RAG (FastAPI)
 var ragBaseUrl = builder.Configuration["RAG_BASE_URL"] ?? throw new InvalidOperationException("RAG_BASE_URL no configurado.");
@@ -69,6 +71,7 @@ builder.Services.AddAuthentication(options =>
 })
 .AddJwtBearer(options =>
 {
+    options.MapInboundClaims = false;
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuer = true,

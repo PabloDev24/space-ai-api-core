@@ -10,5 +10,11 @@ public interface IApplicationDbContext
     DbSet<KnowledgeQuery> KnowledgeQueries { get; }
     DbSet<AccessLog> AccessLogs { get; }
     DbSet<Device> Devices { get; }
+
+    //Nuevo
+    DbSet<Materia> Materias { get; }
+    DbSet<Calificacion> Calificaciones {  get; }
+    DbSet<ClaseHorario> ClasesHorario {  get; }
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }
