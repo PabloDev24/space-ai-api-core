@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using SmartSpaces.Infrastructure.Persistence;
@@ -11,9 +12,11 @@ using SmartSpaces.Infrastructure.Persistence;
 namespace SmartSpaces.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260801193025_Actualizacion_Modelos")]
+    partial class Actualizacion_Modelos
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -52,68 +55,6 @@ namespace SmartSpaces.Infrastructure.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("AccessLogs");
-                });
-
-            modelBuilder.Entity("SmartSpaces.Domain.Entities.AccessPoint", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Building")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("character varying(150)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("DeviceId")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("character varying(150)");
-
-                    b.Property<int>("NetworkPingMs")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("character varying(30)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DeviceId")
-                        .IsUnique();
-
-                    b.ToTable("AccessPoints");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("33333333-3333-3333-3333-333333333301"),
-                            Building = "Edificio 1 - Ala Norte",
-                            CreatedAt = new DateTime(2026, 7, 1, 18, 0, 0, 0, DateTimeKind.Utc),
-                            DeviceId = "access-tablet-001",
-                            Name = "Entrada Principal - Torniquete A",
-                            NetworkPingMs = 12,
-                            Status = "Active"
-                        },
-                        new
-                        {
-                            Id = new Guid("33333333-3333-3333-3333-333333333302"),
-                            Building = "Edificio 3 - Nivel 1",
-                            CreatedAt = new DateTime(2026, 7, 1, 18, 0, 0, 0, DateTimeKind.Utc),
-                            DeviceId = "access-tablet-002",
-                            Name = "Puerta Este - Biblioteca",
-                            NetworkPingMs = 24,
-                            Status = "Active"
-                        });
                 });
 
             modelBuilder.Entity("SmartSpaces.Domain.Entities.Calificacion", b =>
@@ -346,60 +287,6 @@ namespace SmartSpaces.Infrastructure.Migrations
                         });
                 });
 
-            modelBuilder.Entity("SmartSpaces.Domain.Entities.KnowledgeDocument", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("ContentType")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("character varying(150)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("ErrorMessage")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
-
-                    b.Property<string>("Extension")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("character varying(10)");
-
-                    b.Property<DateTime?>("LastSyncedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(260)
-                        .HasColumnType("character varying(260)");
-
-                    b.Property<long>("SizeBytes")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
-
-                    b.Property<string>("StoragePath")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
-
-                    b.Property<Guid?>("UploadedByUserId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedAt");
-
-                    b.ToTable("KnowledgeDocuments");
-                });
-
             modelBuilder.Entity("SmartSpaces.Domain.Entities.KnowledgeQuery", b =>
                 {
                     b.Property<Guid>("Id")
@@ -566,13 +453,6 @@ namespace SmartSpaces.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)")
-                        .HasDefaultValue("Activo");
-
                     b.Property<string>("Telefono")
                         .HasColumnType("text");
 
@@ -604,7 +484,6 @@ namespace SmartSpaces.Infrastructure.Migrations
                             PasswordHash = "$2a$11$tHMJ.UMKAT.LxfTpqbtRz.Trd4yOSVBl1ugCtQMeEK1dK8gVIq4KK",
                             QrExpiry = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Role = "admin",
-                            Status = "Activo",
                             Telefono = "4771234567",
                             TotalAttendance = 92
                         },
@@ -622,7 +501,6 @@ namespace SmartSpaces.Infrastructure.Migrations
                             PasswordHash = "$2a$11$tHMJ.UMKAT.LxfTpqbtRz.Trd4yOSVBl1ugCtQMeEK1dK8gVIq4KK",
                             QrExpiry = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Role = "student",
-                            Status = "Activo",
                             Telefono = "4779876543",
                             TotalAttendance = 88
                         });

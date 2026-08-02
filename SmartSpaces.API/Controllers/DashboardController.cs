@@ -2,6 +2,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SmartSpaces.Application.Features.Dashboard.Queries.GetActivity;
+using SmartSpaces.Application.Features.Dashboard.Queries.GetNextClass;
 using SmartSpaces.Application.Features.Dashboard.Queries.GetSummary;
 
 namespace SmartSpaces.API.Controllers;
@@ -45,4 +46,14 @@ public class DashboardController : ControllerBase
             return BadRequest(new { error = ex.Message });
         }
     }
+
+    //Nuevo
+    [HttpGet("next-class")]
+    public async Task<IActionResult> GetNextClass()
+    {
+        var userId = Guid.Parse(User.FindFirst(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub)!.Value);
+        var result = await _mediator.Send(new GetNextClassQuery(userId));
+        return Ok(result);
+    }
+    //
 }

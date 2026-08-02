@@ -22,6 +22,17 @@ namespace SmartSpaces.Domain.Entities
         public string? QrToken { get; set; }
         public DateTime QrExpiry {  get; set; }
 
+        //Nuevo
+
+        public string? Matricula { get; set; }
+        public string? Carrera { get; set; }
+        public string? Grupo { get; set; }
+        public string? Division { get; set; }
+        public string? Campus { get; set; }
+        public string? Telefono { get; set; }
+        public string? EmailAlterno { get; set; }
+        public int TotalAttendance { get; set; }
+
         public ICollection<Session> Sessions { get; set; } = new List<Session>();
     }
 }

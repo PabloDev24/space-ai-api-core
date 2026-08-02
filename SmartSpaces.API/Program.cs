@@ -38,7 +38,9 @@ builder.Services.AddSingleton<ICartLastRouteTracker, InMemoryCartLastRouteTracke
 builder.Services.AddSingleton<ICacheService, CacheService>(); // Usamos Singleton para mantener viva la conexión a Redis|
 builder.Services.AddScoped<IDocumentStorage, LocalDocumentStorage>(); // Documentos base del RAG (disco local en dev, Blob Storage en Azure)
 builder.Services.AddApplicationServices();
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+        options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase);
 
 // Cliente HTTP tipado hacia el microservicio RAG (FastAPI)
 var ragBaseUrl = builder.Configuration["RAG_BASE_URL"] ?? throw new InvalidOperationException("RAG_BASE_URL no configurado.");
@@ -70,6 +72,7 @@ builder.Services.AddAuthentication(options =>
 })
 .AddJwtBearer(options =>
 {
+    options.MapInboundClaims = false;
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuer = true,

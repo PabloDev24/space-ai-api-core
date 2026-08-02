@@ -12,5 +12,9 @@ public interface IApplicationDbContext
     DbSet<Device> Devices { get; }
     DbSet<AccessPoint> AccessPoints { get; }
     DbSet<KnowledgeDocument> KnowledgeDocuments { get; }
+    DbSet<Materia> Materias { get; }
+    DbSet<Calificacion> Calificaciones { get; }
+    DbSet<ClaseHorario> ClasesHorario { get; }
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }
