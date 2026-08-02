@@ -35,7 +35,12 @@ public class ScanAccessCommandHandler : IRequestHandler<ScanAccessCommand, ScanA
 
         if (DateTime.UtcNow > qrData.ExpiredAt)
         {
-            return new ScanAccessResult(false, "El código QR ha expirado.", null, DateTime.UtcNow);
+            // El QR expirado sí trae usuario identificable, así que el rechazo queda registrado:
+            // es lo que alimenta "intentos fallidos" en /api/identity/metrics y /activity.
+            // (Un QR inválido/alterado no se puede atribuir a nadie y no se registra.)
+            var rejectedAt = DateTime.UtcNow;
+            await LogAccessAsync(qrData.UserId, request.DeviceId, direction, false, rejectedAt, cancellationToken);
+            return new ScanAccessResult(false, "El código QR ha expirado.", null, rejectedAt);
         }
 
         // 2. Verificar que el usuario siga existiendo.

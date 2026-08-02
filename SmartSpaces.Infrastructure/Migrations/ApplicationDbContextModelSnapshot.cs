@@ -54,6 +54,205 @@ namespace SmartSpaces.Infrastructure.Migrations
                     b.ToTable("AccessLogs");
                 });
 
+            modelBuilder.Entity("SmartSpaces.Domain.Entities.AccessPoint", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Building")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeviceId")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)");
+
+                    b.Property<int>("NetworkPingMs")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DeviceId")
+                        .IsUnique();
+
+                    b.ToTable("AccessPoints");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("33333333-3333-3333-3333-333333333301"),
+                            Building = "Edificio 1 - Ala Norte",
+                            CreatedAt = new DateTime(2026, 7, 1, 18, 0, 0, 0, DateTimeKind.Utc),
+                            DeviceId = "access-tablet-001",
+                            Name = "Entrada Principal - Torniquete A",
+                            NetworkPingMs = 12,
+                            Status = "Active"
+                        },
+                        new
+                        {
+                            Id = new Guid("33333333-3333-3333-3333-333333333302"),
+                            Building = "Edificio 3 - Nivel 1",
+                            CreatedAt = new DateTime(2026, 7, 1, 18, 0, 0, 0, DateTimeKind.Utc),
+                            DeviceId = "access-tablet-002",
+                            Name = "Puerta Este - Biblioteca",
+                            NetworkPingMs = 24,
+                            Status = "Active"
+                        });
+                });
+
+            modelBuilder.Entity("SmartSpaces.Domain.Entities.Calificacion", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<double?>("Final")
+                        .HasColumnType("double precision");
+
+                    b.Property<Guid>("MateriaId")
+                        .HasColumnType("uuid");
+
+                    b.Property<double?>("Parcial1")
+                        .HasColumnType("double precision");
+
+                    b.Property<double?>("Parcial2")
+                        .HasColumnType("double precision");
+
+                    b.Property<double?>("Parcial3")
+                        .HasColumnType("double precision");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MateriaId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Calificaciones");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("44444444-4444-4444-4444-444444444401"),
+                            Final = 9.0,
+                            MateriaId = new Guid("33333333-3333-3333-3333-333333333301"),
+                            Parcial1 = 9.0,
+                            Parcial2 = 8.5,
+                            Parcial3 = 9.5,
+                            UserId = new Guid("22222222-2222-2222-2222-222222222202")
+                        },
+                        new
+                        {
+                            Id = new Guid("44444444-4444-4444-4444-444444444402"),
+                            MateriaId = new Guid("33333333-3333-3333-3333-333333333302"),
+                            Parcial1 = 7.5,
+                            Parcial2 = 8.0,
+                            UserId = new Guid("22222222-2222-2222-2222-222222222202")
+                        },
+                        new
+                        {
+                            Id = new Guid("44444444-4444-4444-4444-444444444403"),
+                            Final = 9.5,
+                            MateriaId = new Guid("33333333-3333-3333-3333-333333333303"),
+                            Parcial1 = 10.0,
+                            Parcial2 = 9.5,
+                            Parcial3 = 9.0,
+                            UserId = new Guid("22222222-2222-2222-2222-222222222202")
+                        });
+                });
+
+            modelBuilder.Entity("SmartSpaces.Domain.Entities.ClaseHorario", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("DiaSemana")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Edificio")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Grupo")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<TimeSpan>("HoraFin")
+                        .HasColumnType("interval");
+
+                    b.Property<TimeSpan>("HoraInicio")
+                        .HasColumnType("interval");
+
+                    b.Property<Guid>("MateriaId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Salon")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MateriaId");
+
+                    b.ToTable("ClasesHorario");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("55555555-5555-5555-5555-555555555501"),
+                            DiaSemana = 1,
+                            Edificio = "Edificio A",
+                            Grupo = "IDGS-7A",
+                            HoraFin = new TimeSpan(0, 9, 30, 0, 0),
+                            HoraInicio = new TimeSpan(0, 8, 0, 0, 0),
+                            MateriaId = new Guid("33333333-3333-3333-3333-333333333301"),
+                            Salon = "A-204"
+                        },
+                        new
+                        {
+                            Id = new Guid("55555555-5555-5555-5555-555555555502"),
+                            DiaSemana = 1,
+                            Edificio = "Edificio B",
+                            Grupo = "IDGS-7A",
+                            HoraFin = new TimeSpan(0, 11, 0, 0, 0),
+                            HoraInicio = new TimeSpan(0, 9, 30, 0, 0),
+                            MateriaId = new Guid("33333333-3333-3333-3333-333333333302"),
+                            Salon = "B-101"
+                        },
+                        new
+                        {
+                            Id = new Guid("55555555-5555-5555-5555-555555555503"),
+                            DiaSemana = 2,
+                            Edificio = "Edificio A",
+                            Grupo = "IDGS-7A",
+                            HoraFin = new TimeSpan(0, 9, 30, 0, 0),
+                            HoraInicio = new TimeSpan(0, 8, 0, 0, 0),
+                            MateriaId = new Guid("33333333-3333-3333-3333-333333333303"),
+                            Salon = "A-101"
+                        });
+                });
+
             modelBuilder.Entity("SmartSpaces.Domain.Entities.Device", b =>
                 {
                     b.Property<Guid>("Id")
@@ -147,6 +346,60 @@ namespace SmartSpaces.Infrastructure.Migrations
                         });
                 });
 
+            modelBuilder.Entity("SmartSpaces.Domain.Entities.KnowledgeDocument", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ContentType")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ErrorMessage")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("Extension")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
+
+                    b.Property<DateTime?>("LastSyncedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(260)
+                        .HasColumnType("character varying(260)");
+
+                    b.Property<long>("SizeBytes")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<string>("StoragePath")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<Guid?>("UploadedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedAt");
+
+                    b.ToTable("KnowledgeDocuments");
+                });
+
             modelBuilder.Entity("SmartSpaces.Domain.Entities.KnowledgeQuery", b =>
                 {
                     b.Property<Guid>("Id")
@@ -189,6 +442,47 @@ namespace SmartSpaces.Infrastructure.Migrations
                     b.ToTable("KnowledgeQueries");
                 });
 
+            modelBuilder.Entity("SmartSpaces.Domain.Entities.Materia", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)");
+
+                    b.Property<string>("Profesor")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Materias");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("33333333-3333-3333-3333-333333333301"),
+                            Nombre = "Programación Móvil",
+                            Profesor = "Ing. Laura Reyes"
+                        },
+                        new
+                        {
+                            Id = new Guid("33333333-3333-3333-3333-333333333302"),
+                            Nombre = "Bases de Datos Avanzadas",
+                            Profesor = "Ing. Marco Villalobos"
+                        },
+                        new
+                        {
+                            Id = new Guid("33333333-3333-3333-3333-333333333303"),
+                            Nombre = "Ingeniería de Software",
+                            Profesor = "Ing. Paola Sánchez"
+                        });
+                });
+
             modelBuilder.Entity("SmartSpaces.Domain.Entities.Session", b =>
                 {
                     b.Property<Guid>("Id")
@@ -228,11 +522,29 @@ namespace SmartSpaces.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<string>("Campus")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Carrera")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Division")
+                        .HasColumnType("text");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("EmailAlterno")
+                        .HasColumnType("text");
+
                     b.Property<string>("Folio")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Grupo")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Matricula")
                         .HasColumnType("text");
 
                     b.Property<string>("Name")
@@ -254,6 +566,19 @@ namespace SmartSpaces.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasDefaultValue("Activo");
+
+                    b.Property<string>("Telefono")
+                        .HasColumnType("text");
+
+                    b.Property<int>("TotalAttendance")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
                     b.HasIndex("Email")
@@ -268,12 +593,38 @@ namespace SmartSpaces.Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("22222222-2222-2222-2222-222222222201"),
+                            Campus = "UTL Campus León",
+                            Carrera = "Ingeniería en Desarrollo y Gestión de Software",
+                            Division = "División de Tecnologías de la Información",
                             Email = "daniel@utl.edu.mx",
                             Folio = "20260001",
+                            Grupo = "IDGS-7A",
+                            Matricula = "20260001",
                             Name = "Daniel Ojeda Luna",
                             PasswordHash = "$2a$11$tHMJ.UMKAT.LxfTpqbtRz.Trd4yOSVBl1ugCtQMeEK1dK8gVIq4KK",
                             QrExpiry = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Role = "admin"
+                            Role = "admin",
+                            Status = "Activo",
+                            Telefono = "4771234567",
+                            TotalAttendance = 92
+                        },
+                        new
+                        {
+                            Id = new Guid("22222222-2222-2222-2222-222222222202"),
+                            Campus = "UTL Campus León",
+                            Carrera = "Ingeniería en Desarrollo y Gestión de Software",
+                            Division = "División de Tecnologías de la Información",
+                            Email = "alumno@utl.edu.mx",
+                            Folio = "20260002",
+                            Grupo = "IDGS-7A",
+                            Matricula = "20260002",
+                            Name = "Alumno de Prueba",
+                            PasswordHash = "$2a$11$tHMJ.UMKAT.LxfTpqbtRz.Trd4yOSVBl1ugCtQMeEK1dK8gVIq4KK",
+                            QrExpiry = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Role = "student",
+                            Status = "Activo",
+                            Telefono = "4779876543",
+                            TotalAttendance = 88
                         });
                 });
 
@@ -286,6 +637,36 @@ namespace SmartSpaces.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("SmartSpaces.Domain.Entities.Calificacion", b =>
+                {
+                    b.HasOne("SmartSpaces.Domain.Entities.Materia", "Materia")
+                        .WithMany("Calificaciones")
+                        .HasForeignKey("MateriaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SmartSpaces.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Materia");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("SmartSpaces.Domain.Entities.ClaseHorario", b =>
+                {
+                    b.HasOne("SmartSpaces.Domain.Entities.Materia", "Materia")
+                        .WithMany("Clases")
+                        .HasForeignKey("MateriaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Materia");
                 });
 
             modelBuilder.Entity("SmartSpaces.Domain.Entities.KnowledgeQuery", b =>
@@ -308,6 +689,13 @@ namespace SmartSpaces.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("SmartSpaces.Domain.Entities.Materia", b =>
+                {
+                    b.Navigation("Calificaciones");
+
+                    b.Navigation("Clases");
                 });
 
             modelBuilder.Entity("SmartSpaces.Domain.Entities.User", b =>

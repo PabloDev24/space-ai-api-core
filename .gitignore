@@ -367,6 +367,9 @@ SmartSpaces.API/appsettings.Development.json
 SmartSpaces.API/appsettings.Production.json
 .env
 
+# Documentos base del RAG subidos en local (el binario no va al repo, solo su metadata en DB)
+SmartSpaces.API/storage/
+
 # Claude Code / AI agent tooling (not part of the project)
 .claude/
 .agents/
