@@ -11,6 +11,9 @@ permissions:
 
 jobs:
   build-and-deploy:
+    # Los secrets de OIDC solo existen en el repo original; en forks llegarían
+    # vacíos y azure/login fallaría igual, así que evitamos correr ahí.
+    if: github.repository == 'lattice-systems/space-ai-api-core'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
